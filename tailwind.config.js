@@ -9,7 +9,13 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+
+      spacing: {
+        '120': '44rem', // Add your custom value here
+      },
+
+    },
   },
   plugins: [],
 }

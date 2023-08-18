@@ -1,18 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface AppState {
+interface GeneralState {
   
     page : String,
 
 }
 
-const initialState: AppState = {
-    page : '',
+const initialState: GeneralState = {
+    page : 'Signup',
   
 };
 
 const AppSlice = createSlice({
-    name: 'auth',
+    name: 'general',
     initialState,
     reducers: {
       update_page: (state, action: PayloadAction<String>) => {

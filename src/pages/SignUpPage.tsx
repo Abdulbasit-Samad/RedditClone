@@ -1,47 +1,53 @@
+import {Set_SignupButtonClicked,Set_isLoadingSignupButton,Set_isValidSignupEmail} from '../redux/Slices/SignupSlice';
+import { update_page } from '../redux/Slices/GeneralSlice';
+import {Set_UserSignUpEmail} from '../redux/Slices/UserSlice';
+import { useAppDispatch,useAppSelector } from '../redux/hooks';
 import { FcGoogle } from "react-icons/fc"
 import {AiFillApple} from "react-icons/ai"
 import { useRouter } from 'next/router';
 import {signInWithGoogle} from "../firebase"
-import React, { useState } from 'react';
+import React from 'react';
 import * as Loader from "react-loader-spinner";
 import {TiTick} from 'react-icons/ti';
 
 export default function SignupPage() {
   
-  const [email, setEmail] = useState('');
-  const [isValid, setIsValid] = useState(true);
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [buttonclicked, setbutton] = useState(false);
+  const dispatch = useAppDispatch();
+
+  const isValidSignupEmail = useAppSelector((state) => state.Signup.isValidSignupEmail);
+  const isLoadingSignupButton = useAppSelector((state) => state.Signup.isLoadingSignupButton);
+  const SignupButtonClicked =  useAppSelector((state) => state.Signup.SignupButtonClicked);
+  const SignupUserEmail = useAppSelector((state) => state.SignupUser.UserSignUpEmail);
   
 
   const moveToLoginView = () => {
    
-    router.push({
-      pathname: '/',
-      query: { key: 'login' },
-    });
+    dispatch(update_page('Login'));
   }
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setbutton(false);
+ 
+   dispatch(Set_SignupButtonClicked(false));
     const newEmail = event.target.value;
-    setEmail(newEmail);
+    dispatch(Set_UserSignUpEmail(newEmail));
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    setIsValid(emailRegex.test(newEmail));
+   dispatch(Set_isValidSignupEmail(emailRegex.test(newEmail)));
+
+
   };
   
   const handleContinueClick = () => {
-    setIsLoading(true);
-    
-
+   dispatch(Set_isLoadingSignupButton(true));   
     setTimeout(() => {
-      setIsLoading(false);
-      if(!isValid)setbutton(true);
+
+    dispatch(Set_isLoadingSignupButton(false));
+
+     if( !isValidSignupEmail) dispatch(Set_SignupButtonClicked(true));
+
+
       else{
-        router.push({
-          pathname: '/UserNamePage',
-        });
+        router.replace('/UserNamePage');
       }
     }, 1000); 
     
@@ -75,20 +81,20 @@ export default function SignupPage() {
     <p className="mx-4 text-gray-400">or</p>
     <div className="flex-grow h-px bg-gray-300"></div>
     </div>
-    <div className={`h-12 flex justify-between items-center border ${email === '' ? 'border-zinc-300' :  isValid ? 'border-blue-600' : 'border-red-500'}`}>
+    <div className={`h-12 flex justify-between items-center border ${SignupUserEmail === '' ? 'border-zinc-300' :  isValidSignupEmail ? 'border-blue-600' : 'border-red-500'}`}>
     <input onChange={handleEmailChange} placeholder="Email" required className="ml-2 border-none outline-none focus:ring-0 placeholder-gray-400 text-sm  " />
-    {email == ''? null :  isValid ?  < TiTick className='text-blue-700' /> : <h1 className="font-bold mr-1 text-red-500">!</h1>}
+    {SignupUserEmail == ''? null :  isValidSignupEmail ?  < TiTick className='text-blue-700' /> : <h1 className="font-bold mr-1 text-red-500">!</h1>}
     </div>
 
-    {buttonclicked ? <h1 className="text-xs ml-2 text-red-600 font-bold mt-1 ">
+    {SignupButtonClicked ? <h1 className="text-xs ml-2 text-red-600 font-bold mt-1 ">
           That email is not valid
-        </h1> :  !isValid && email!='' ? <h1 className="text-xs ml-2 text-red-600 font-bold mt-1 ">
+        </h1> :  !isValidSignupEmail && SignupUserEmail!='' ? <h1 className="text-xs ml-2 text-red-600 font-bold mt-1 ">
           Please fix your email to continue
         </h1> : null }
 
      <div className="mt-4 bg-blue-500 flex justify-center h-9 text-white font-bold hover:bg-blue-400">
-      <button disabled={isLoading} onClick={handleContinueClick}>
-      {isLoading ? (
+      <button disabled={isLoadingSignupButton} onClick={handleContinueClick}>
+      {isLoadingSignupButton ? (
             <Loader.TailSpin  color="white" height={20} width={20} />
           ) : (
             'CONTINUE'

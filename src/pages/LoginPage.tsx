@@ -1,18 +1,15 @@
-
-import { useRouter } from 'next/router';
+import { update_page } from '../redux/Slices/GeneralSlice';
+import { useAppDispatch } from '../redux/hooks';
 import { FcGoogle } from "react-icons/fc"
-
 import {AiFillApple} from "react-icons/ai"
-
 export default function LoginView() {
 
-    const router = useRouter();
+  const dispatch = useAppDispatch();
+
   const moveToSignUp = () => {
-   
-    router.push({
-      pathname: '/',
-      query: { key: 'Signup' },
-    });
+  
+    dispatch(update_page('Signup'));
+    
   }
 
 return(
