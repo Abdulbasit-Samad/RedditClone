@@ -5,8 +5,8 @@ import { useAppDispatch,useAppSelector } from '../redux/hooks';
 import { FcGoogle } from "react-icons/fc"
 import {AiFillApple} from "react-icons/ai"
 import { useRouter } from 'next/router';
-import {signInWithGoogle} from "../firebase"
-import React from 'react';
+import {signInWithGoogle, checkUniqueEntity} from "../firebase"
+import React, { useState } from 'react';
 import * as Loader from "react-loader-spinner";
 import {TiTick} from 'react-icons/ti';
 
@@ -20,6 +20,7 @@ export default function SignupPage() {
   const SignupButtonClicked =  useAppSelector((state) => state.Signup.SignupButtonClicked);
   const SignupUserEmail = useAppSelector((state) => state.SignupUser.UserSignUpEmail);
   
+  const [emailtaken, setTaken] = useState(false);
 
   const moveToLoginView = () => {
    
@@ -29,6 +30,7 @@ export default function SignupPage() {
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
  
    dispatch(Set_SignupButtonClicked(false));
+   setTaken(false);
     const newEmail = event.target.value;
     dispatch(Set_UserSignUpEmail(newEmail));
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -37,22 +39,28 @@ export default function SignupPage() {
 
   };
   
-  const handleContinueClick = () => {
-   dispatch(Set_isLoadingSignupButton(true));   
-    setTimeout(() => {
-
+  const handleContinueClick = async () => {
+    dispatch(Set_isLoadingSignupButton(true));
+  
+    const delay = (ms : number) => new Promise((resolve) => setTimeout(resolve, ms));
+  
+    await delay(1000); // Wait for 1 second
+  
     dispatch(Set_isLoadingSignupButton(false));
-
-     if( !isValidSignupEmail) dispatch(Set_SignupButtonClicked(true));
-
-
-      else{
+  
+    if (!isValidSignupEmail) {
+      dispatch(Set_SignupButtonClicked(true));
+    } else {
+      const unq = await checkUniqueEntity('Email', SignupUserEmail);
+      if (unq) {
         router.replace('/UserNamePage');
       }
-    }, 1000); 
-    
+      else{
+        setTaken(true);
+      }
+    }
   };
-
+  
 
     return (
         <div className="flex flex-col px-8 justify-center">
@@ -81,16 +89,16 @@ export default function SignupPage() {
     <p className="mx-4 text-gray-400">or</p>
     <div className="flex-grow h-px bg-gray-300"></div>
     </div>
-    <div className={`h-12 flex justify-between items-center border ${SignupUserEmail === '' ? 'border-zinc-300' :  isValidSignupEmail ? 'border-blue-600' : 'border-red-500'}`}>
+    <div className={`h-12 flex justify-between items-center border ${SignupUserEmail === '' ? 'border-zinc-300' :  isValidSignupEmail  && !emailtaken? 'border-blue-600' : 'border-red-500'}`}>
     <input onChange={handleEmailChange} placeholder="Email" required className="ml-2 border-none outline-none focus:ring-0 placeholder-gray-400 text-sm  " />
-    {SignupUserEmail == ''? null :  isValidSignupEmail ?  < TiTick className='text-blue-700' /> : <h1 className="font-bold mr-1 text-red-500">!</h1>}
+    {SignupUserEmail == ''? null :  isValidSignupEmail && !emailtaken ?  < TiTick className='text-blue-700' /> : <h1 className="font-bold mr-1 text-red-500">!</h1>}
     </div>
 
     {SignupButtonClicked ? <h1 className="text-xs ml-2 text-red-600 font-bold mt-1 ">
           That email is not valid
         </h1> :  !isValidSignupEmail && SignupUserEmail!='' ? <h1 className="text-xs ml-2 text-red-600 font-bold mt-1 ">
           Please fix your email to continue
-        </h1> : null }
+        </h1> : emailtaken ? <h1 className="text-xs ml-2 text-red-600 font-bold mt-1 ">That email is already taken</h1> : null }
 
      <div className="mt-4 bg-blue-500 flex justify-center h-9 text-white font-bold hover:bg-blue-400">
       <button disabled={isLoadingSignupButton} onClick={handleContinueClick}>

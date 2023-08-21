@@ -2,6 +2,7 @@ import { update_page } from '../redux/Slices/GeneralSlice';
 import { useAppDispatch } from '../redux/hooks';
 import { FcGoogle } from "react-icons/fc"
 import {AiFillApple} from "react-icons/ai"
+import {signInWithGoogle} from '../firebase';
 export default function LoginView() {
 
   const dispatch = useAppDispatch();
@@ -21,7 +22,7 @@ return(
 <h1 className="py-2 text-sm">By continuing, you agree to our <a className="text-blue-400" href="https://www.redditinc.com/policies/user-agreement" target="_blank" rel="noopener noreferrer">User Agreement</a> and <a className="text-blue-400" target="_blank" rel="noopener noreferrer" href="https://www.reddit.com/policies/privacy-policy">Privacy Policy</a>.</h1>
 
 <div className="border border-gray-200 focus:border-black-200 p-2 mt-8 rounded-full flex flex-col hover:bg-blue-100 active:bg-blue-100 focus:ring focus:ring-blue-100 w-64">
-       <button className="flex items-center ">
+       <button className="flex items-center " onClick={signInWithGoogle}>
          <FcGoogle className="text-xl "/> <h1 className="ml-4 text-base">Continue with Google</h1>
          
        </button>
