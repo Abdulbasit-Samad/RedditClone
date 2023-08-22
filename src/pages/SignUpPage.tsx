@@ -1,6 +1,6 @@
 import {Set_SignupButtonClicked,Set_isLoadingSignupButton,Set_isValidSignupEmail} from '../redux/Slices/SignupSlice';
 import { update_page } from '../redux/Slices/GeneralSlice';
-import {Set_UserSignUpEmail} from '../redux/Slices/UserSlice';
+import {Set_UserSignUpEmail, Set_UserName, Set_UserProfile} from '../redux/Slices/UserSlice';
 import { useAppDispatch,useAppSelector } from '../redux/hooks';
 import { FcGoogle } from "react-icons/fc"
 import {AiFillApple} from "react-icons/ai"
@@ -21,6 +21,17 @@ export default function SignupPage() {
   const SignupUserEmail = useAppSelector((state) => state.SignupUser.UserSignUpEmail);
   
   const [emailtaken, setTaken] = useState(false);
+
+ const successfulSignUp = async() => {
+   const data = await signInWithGoogle();
+   if(data){
+    dispatch(Set_UserSignUpEmail(data.Email));
+    dispatch(Set_UserName(data.UserName));
+    dispatch(Set_UserProfile(data.PhotoUrl));
+    router.push('/HomePage');
+
+   }
+  }
 
   const moveToLoginView = () => {
    
@@ -48,7 +59,7 @@ export default function SignupPage() {
   
     dispatch(Set_isLoadingSignupButton(false));
   
-    if (!isValidSignupEmail) {
+    if (!isValidSignupEmail ) {
       dispatch(Set_SignupButtonClicked(true));
     } else {
       const unq = await checkUniqueEntity('Email', SignupUserEmail);
@@ -71,7 +82,7 @@ export default function SignupPage() {
 
 
        <div className="border border-gray-200 focus:border-black-200 p-2 mt-8 rounded-full flex flex-col hover:bg-blue-100 active:bg-blue-100 focus:ring focus:ring-blue-100 ">
-       <button className="flex items-center " onClick={signInWithGoogle}>
+       <button className="flex items-center " onClick={successfulSignUp}>
          <FcGoogle className="text-xl "/> <h1 className="ml-4 text-base">Continue with Google</h1>
          
        </button>

@@ -1,33 +1,104 @@
 import { useState } from 'react';
 import {useAppSelector, useAppDispatch} from '../redux/hooks';
 import Image from 'next/image';
-import { Set_UserName } from '@/redux/Slices/UserSlice';
+import { Set_UserName, Set_UserSignUpEmail } from '@/redux/Slices/UserSlice';
 import {update_page} from '@/redux/Slices/GeneralSlice';
 import { useRouter } from 'next/router';
-
-
+import {checkUniqueEntity} from "../firebase"
+import {CreateUserWithEmailAndPassword} from '../firebase';
   export default function SignupPage() {
     
    const router = useRouter();
    const dispatch = useAppDispatch();
-   const UserSignUpEmail = useAppSelector((state) => state.SignupUser.UserSignUpEmail);
+   const UserSignUpEmail = useAppSelector((state) => state.SignupUser.UserSignUpEmail); 
+   const isValidSignUpemail = useAppSelector((state) => state.Signup.isValidSignupEmail); 
    const UserName = useAppSelector((state) => state.SignupUser.UserName);
    const [startIndex, setIndex] = useState(0);
    const SampleUsernames = ['Fair_Negotiation_389', 'Careful_Apricot_7800','Delicious-Buy-4144','Independent-Meat-810', 'AcrobaticCaramel2222', 'No_Honey_8320', 'One-Main2074', 'Junior_Today_4771','Wooden-Ad-5263','Great_Hawk_1330','Full-Butterscotch166','Foreign_Stick_760','General-Priority-520'];
    const itemsPerPage = 5;
-   const page = useAppSelector((state) => state.general.page)
+   const page = useAppSelector((state) => state.general.page);
+   const [redborderU, setBorderU] = useState('');
+   const [symbolU, setsymbolU] = useState('');
+   const [password, setPassword] = useState('');
+   const [redborderP, setBorderP] = useState('');
+   const [symbolP, setsymbolP] = useState('');
+
 
    const refereshUserName = ( )=>{
     const nextIndex = startIndex + itemsPerPage;
     setIndex(nextIndex >= SampleUsernames.length ? 0 : nextIndex);
    }
-   const handleUserName = (event: React.ChangeEvent<HTMLInputElement>) => {
+   const handleUserName = async (event: React.ChangeEvent<HTMLInputElement>) => {
 
        dispatch(Set_UserName(event.target.value));
+      
+       if(event.target.value==''){
+        setBorderU('');
+        setsymbolU('');
+       }
+       else{
+        const unq = await checkUniqueEntity('UserName', event.target.value);
+       if(!unq || event.target.value.length<4){
+        setBorderU('redborder');
+        setsymbolU('cross');
+       }
+       else{
+        setBorderU('blueborder');
+        setsymbolU('tick');
+       }
+      }
+
    }
-   const setSampleUserName = (item : string ) => {
+   const handlePassword = async (event: React.ChangeEvent<HTMLInputElement>) => {
+
+    setPassword(event.target.value);
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,50}$/;
+    if(event.target.value==''){
+      setBorderP('');
+      setsymbolP('');
+    }
+    else{
+       if(passwordPattern.test(password)){
+        setBorderP('blueborder');
+        setsymbolP('tick');
+       }
+       else{
+        setBorderP('redborder');
+        setsymbolP('cross');
+       }
+    }
+
+    
+
+
+   }
+   const onSignUp = async ()=> {
+
+    if(symbolP=='tick' && symbolU=='tick'){
+      const data = {
+        Email : UserSignUpEmail,
+        Password : password,
+        PhotoUrl : '',
+        UserName : UserName,
+      }
+
+      CreateUserWithEmailAndPassword(UserSignUpEmail.toString(), password,UserName.toString());
+      router.push('./HomePage');
+    }
+
+  }
+   const setSampleUserName = async(item : string ) => {
 
     dispatch (Set_UserName(item));
+    const unq = await checkUniqueEntity('UserName', item);
+    if(unq){
+    setBorderU('blueborder');
+    setsymbolU('tick');
+    }
+    else{
+      setBorderU('redborder');
+    setsymbolU('cross');
+    }
    }
 
   const BacktoSignup = () => {
@@ -48,10 +119,17 @@ import { useRouter } from 'next/router';
        <div className='mt-4 flex justify-between'>
         
         <form method='POST' className='flex flex-col gap-4 ml-6 ' >
+       
+       <div className = {`border ${redborderU == 'redborder' ? 'border-red-500' : redborderU == 'blueborder' ? 'border-blue-600' : 'border-gray-200' }`}>
+       <input value={UserName.toString()} onChange={handleUserName} placeholder="CHOOSE A USERNAME" required className=" focus:ring-0 placeholder-gray-400    w-80 h-12 pl-2  text-xs bg-zinc-50 border outline-none " aria-required/>
+       </div>
 
-       <input value={UserName.toString()} onChange={handleUserName}  placeholder="CHOOSE A USERNAME" required className=" focus:ring-0 placeholder-gray-400  border outline-none w-80 h-12 pl-2  text-xs bg-zinc-50 " aria-required/>
+       <div className={`border ${redborderP == 'redborder' ? 'border-red-500' : redborderP == 'blueborder' ? 'border-blue-600' : 'border-gray-200' }`}>
 
-       <input  placeholder="PASSWORD" required className=" focus:ring-0 placeholder-gray-400 text-xs border outline-none pl-2 w-80 h-12  bg-zinc-50" aria-required />
+       <input onChange={handlePassword} placeholder="PASSWORD" required className=" focus:ring-0 placeholder-gray-400 text-xs   pl-2 w-80 h-12  bg-zinc-50 border outline-none" aria-required />
+       
+       </div>
+       
 
        </form>
          
@@ -92,7 +170,7 @@ import { useRouter } from 'next/router';
 
         <button onClick={BacktoSignup} className='text-zinc-950  ml-4 hover:text-blue-500'>Back</button>
         <div className='bg-sky-600 text-white mr-5 w-40 h-9 flex justify-center hover:bg-sky-500'>
-        <button >Signup</button>
+        <button onClick={onSignUp}>Signup</button>
         </div>
 
        </div>
