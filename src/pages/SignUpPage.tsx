@@ -28,7 +28,7 @@ export default function SignupPage() {
     dispatch(Set_UserSignUpEmail(data.Email));
     dispatch(Set_UserName(data.UserName));
     dispatch(Set_UserProfile(data.PhotoUrl));
-    router.push('/HomePage');
+    router.push('/RedditViewPage');
 
    }
   }
@@ -64,7 +64,7 @@ export default function SignupPage() {
     } else {
       const unq = await checkUniqueEntity('Email', SignupUserEmail);
       if (unq) {
-        router.replace('/UserNamePage');
+        router.push('/UserNamePage');
       }
       else{
         setTaken(true);

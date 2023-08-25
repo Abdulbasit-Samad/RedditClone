@@ -58,7 +58,8 @@ import {CreateUserWithEmailAndPassword} from '../firebase';
       setsymbolP('');
     }
     else{
-       if(passwordPattern.test(password)){
+       if(passwordPattern.test(event.target.value)){
+        console.log('blue')
         setBorderP('blueborder');
         setsymbolP('tick');
        }
@@ -74,7 +75,7 @@ import {CreateUserWithEmailAndPassword} from '../firebase';
    }
    const onSignUp = async ()=> {
 
-    if(symbolP=='tick' && symbolU=='tick'){
+    if(symbolP=='tick' && symbolU=='tick' && UserSignUpEmail != ''){
       const data = {
         Email : UserSignUpEmail,
         Password : password,
@@ -82,8 +83,9 @@ import {CreateUserWithEmailAndPassword} from '../firebase';
         UserName : UserName,
       }
 
-      CreateUserWithEmailAndPassword(UserSignUpEmail.toString(), password,UserName.toString());
-      router.push('./HomePage');
+     const check =await CreateUserWithEmailAndPassword(UserSignUpEmail.toString(), password,UserName.toString());
+     if(check)
+      router.push('./RedditViewPage');
     }
 
   }

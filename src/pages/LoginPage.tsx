@@ -26,7 +26,7 @@ export default function LoginView() {
      dispatch(Set_UserSignUpEmail(data.Email));
      dispatch(Set_UserName(data.UserName));
      dispatch(Set_UserProfile(data.PhotoUrl));
-     router.push('/HomePage');
+     router.push('/RedditViewPage');
 
     }
    }
@@ -43,7 +43,7 @@ export default function LoginView() {
     const check = await successfulEmailLogin(uname,pass);
 
     if(check ==true){
-     router.push('./HomePage')
+     router.push('./RedditViewPage')
     }
     else{
       alert('Invalid email or password')

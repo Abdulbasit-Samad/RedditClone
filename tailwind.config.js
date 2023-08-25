@@ -12,7 +12,10 @@ module.exports = {
     extend: {
 
       spacing: {
-        '120': '44rem', // Add your custom value here
+        '100' : '32rem',
+        '120': '48rem',
+        '125' : '54rem',
+          // Add your custom value here
       },
 
     },

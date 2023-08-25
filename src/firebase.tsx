@@ -134,12 +134,13 @@ export const CreateUserWithEmailAndPassword = async ( Uemail: string , Upassword
     try {
 
       await addDoc(usersCollection,data);
+      return true;
     
       }
-      catch (error){ }
+      catch (error){return false; }
   }
   catch (error) {
-
+return false;
   }
   
 }
@@ -149,10 +150,12 @@ export const successfulEmailLogin = async (username : string, password : string)
   const Userquery = query(usersCollection, where('UserName', '==', username));
       const querysnap = await getDocs(Userquery);
       let pass = '', ty = '';
+      if(querysnap.size>0) {
       querysnap.forEach((doc) => {
         pass = doc.data().Password;
         ty= doc.data().Type;
       });
+    }
       if(pass == password && ty=='email')return true;
       else {return false;}
   

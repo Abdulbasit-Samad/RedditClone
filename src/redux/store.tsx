@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import GeneralReducer from './Slices/GeneralSlice';
 import SignupReducer from './Slices/SignupSlice';
 import SignupUserReducer from './Slices/UserSlice';
-
+import PostReducer from './Slices/PostSlice';
 
 
 const store = configureStore({
@@ -10,6 +10,7 @@ const store = configureStore({
     general: GeneralReducer,
     Signup : SignupReducer,
     SignupUser : SignupUserReducer,
+    Post: PostReducer,
     },
   });
 
