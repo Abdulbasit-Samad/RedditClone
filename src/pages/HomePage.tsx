@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className=" flex flex-col items-end mr-96 mt-10 gap-3 ">
+    <div className=" flex flex-col  items-end mr-16 mt-10 gap-3 ">
 
       <div className='bg-white w-96 h-32 flex flex-col '>
 

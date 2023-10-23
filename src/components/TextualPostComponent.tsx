@@ -1,5 +1,5 @@
 import { useState } from 'react';
-
+import MyEditor from './RichTextEditor';
 
 export default function TextualPost (){
 
@@ -21,7 +21,7 @@ const setTitlefun  = (event: React.ChangeEvent<HTMLInputElement>) =>{
 
     return (
 
-        <div className="bg-white w-125 h-96 flex flex-col items-center">
+        <div className="bg-white w-120 h-96 flex flex-col px-2 ">
                 <div className={` border ${ titlelength==0 ? 'border-gray-300': 'border-black'} mt-4  flex flex-row justify between`}>
 
                     <input maxLength={titlelimit} onChange={titleLengthhandler} placeholder='Title' className='w-120 h-10 px-2 border-none outline-none'/>
@@ -29,6 +29,8 @@ const setTitlefun  = (event: React.ChangeEvent<HTMLInputElement>) =>{
                     
 
                 </div>
+                <MyEditor/>
+                
         </div>
     );
 }
